@@ -62,7 +62,8 @@ router.get('/room/:id', passport.authenticate('jwt', { session: false }), async 
                 fullname: user.user.fullname,
                 username: user.user.username,
                 email: user.user.email,
-                phoneNumber: user.user.phoneNumber
+                phoneNumber: user.user.phoneNumber,
+                avatar: user.user.avatar,
             }));
 
             res.json({
@@ -92,6 +93,7 @@ router.get('/user/:id', passport.authenticate('jwt', { session: false }),  async
                 roomId: room.roomId,
                 userId: room.userId,
                 name: room.room.name,
+                groupLogo: room.room.groupLogo,
                 created_at: room.room.created_at,
                 updated_at: room.room.updated_at,
             }));

@@ -40,6 +40,10 @@ const allowRoles = (...required_roles: any) => {
            
 
             if (isAuthorized) {
+                // in ra user đầy đủ thông tin user
+                const user = await AppDataSource.getRepository(User).findOneBy({ id: payload.idUser });
+                console.log('User:', user);
+                request.user = user
                 return next(); // Cho phép truy cập nếu role hợp lệ
             } else {
                 return response.status(403).json({ message: 'Forbidden' }); // Từ chối truy cập nếu role không hợp lệ

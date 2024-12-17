@@ -19,6 +19,7 @@ const messageSchema = new Schema<IMessage>({
   content: { type: String, required: true },
   nameUser: { type: String },
   timestamp: { type: String, default: () => moment().format('HH:mm:ss DD/MM/YYYY') }, 
+  avatar: { type: String },
 
 });
 

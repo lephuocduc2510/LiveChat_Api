@@ -60,6 +60,7 @@ router.post('/', asyncHandler(async (req: Request, res: Response) => {
       senderId,
       content,
       nameUser: user.fullname,
+      avatar: user.avatar
     });
 
     await newMessage.save();

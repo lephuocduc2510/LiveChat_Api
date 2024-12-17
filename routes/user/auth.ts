@@ -193,13 +193,16 @@ router.get('/name/:id', async function (req: Request, res: Response, next) {
   }
 });
 
+// API check user
 
-router.post('/check-user', passport.authenticate('jwt', { session: false }), allowRoles('Admin', 'Moderate User', 'Normal User'), async (req: Request, res: Response, next: any) => {
-  res.json({ message: 'You are allowed to access this route' });
-});
+router.get('/check', passport.authenticate('jwt', { session: false }), allowRoles('Admin', 'Mod', 'User'),async (req: Request, res: Response, next: any) => {
+  // trả về user
+  res.json(req.user);
+}); 
 
-router.post('/check-user2', passport.authenticate('jwt', { session: false }), async (req: Request, res: Response, next: any) => {
-  res.json({ message: 'You are allowed to access this route' });
+router.post('/check-user2', passport.authenticate('jwt', { session: false }), allowRoles('Admin', 'Mod', 'User'),async (req: Request, res: Response, next: any) => {
+  // trả về user
+  res.json(req.user);
 });
 
 

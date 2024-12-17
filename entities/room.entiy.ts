@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 import { RoomUser } from './roomUser.entity';
+import c from 'config';
 
 @Entity({ name: 'Rooms' })
 export class Room {
@@ -16,7 +17,8 @@ export class Room {
   @Column({ type: 'int', default: 0 })
   createdBy: number;
 
-
+  @Column({ name: 'groupLogo', length: 255, nullable: true })
+  groupLogo: string;
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

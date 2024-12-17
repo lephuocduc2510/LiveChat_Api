@@ -46,6 +46,7 @@ export const setupChatService = (server: any): Server => {
             senderId: data.idUser,
             timestamp: data.timestamp,
             nameUser: data.nameUser,
+            avatar: data.avatar,
 
           });
 

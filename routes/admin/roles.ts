@@ -17,7 +17,7 @@ const repository = AppDataSource.getRepository(User);
 // Check roles
 
 router.get('/check-login', passport.authenticate('jwt', { session: false }) ,allowRoles('Admin'), (req, res) => {
-  res.json({ message: 'Welcome to the admin dashboard!' });
+  res.json({ message: 'Welcome to the admin dashboard!', user: req.user });
 });
   
 
