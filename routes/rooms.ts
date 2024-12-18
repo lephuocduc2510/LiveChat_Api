@@ -6,6 +6,7 @@ import passport from 'passport';
 import { passportVerifyToken } from '../middlewares/passportJwt';
 import multer from 'multer';
 import path from 'path';
+import { allowRoles } from '../middlewares/checkRole';
 
 
 passport.use('jwt', passportVerifyToken);
@@ -94,7 +95,7 @@ router.get('/user/:id', passport.authenticate('jwt', { session: false }), async 
 
 // Create new room
 
-router.post('/', passport.authenticate('jwt', { session: false }),  async function(req: Request, res: Response, next) {
+router.post('/', passport.authenticate('jwt', { session: false }),allowRoles('Mod', "Admin"),  async function(req: Request, res: Response, next) {
     try {
         const room = new Room();
         respository.merge(room, req.body);
@@ -109,7 +110,7 @@ router.post('/', passport.authenticate('jwt', { session: false }),  async functi
 
 // Update room
 
-router.patch('/:id', passport.authenticate('jwt', { session: false }) ,async function(req: Request, res: Response, next) {
+router.patch('/:id', passport.authenticate('jwt', { session: false }),allowRoles('Mod', "Admin") ,async function(req: Request, res: Response, next) {
     try {
         const room = await respository.findOneBy({ id: parseInt(req.params.id) });
         if (room) {
@@ -127,7 +128,7 @@ router.patch('/:id', passport.authenticate('jwt', { session: false }) ,async fun
 );
 
 //Delete room by Id
-router.delete('/:id', passport.authenticate('jwt', { session: false }), async function(req: Request, res: Response, next) {
+router.delete('/:id', passport.authenticate('jwt', { session: false }),allowRoles('Mod', "Admin"), async function(req: Request, res: Response, next) {
     try {
         const room = await respository.findOneBy({ id: parseInt(req.params.id) });
         if (room) {
@@ -144,7 +145,7 @@ router.delete('/:id', passport.authenticate('jwt', { session: false }), async fu
 );
 
 // API upload group avatar
-router.post('/upload-logo/:roomId', upload.single('logo'), (req: Request, res: Response) => {
+router.post('/upload-logo/:roomId', upload.single('logo'),allowRoles('Mod', "Admin"), (req: Request, res: Response) => {
   (async () => {
     const roomId = parseInt(req.params.roomId);
     const roomRepository = AppDataSource.getRepository(Room);
