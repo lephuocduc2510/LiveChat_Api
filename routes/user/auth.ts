@@ -31,7 +31,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
-    const fileTypes = /jpeg|jpg|png|gif/;
+    const fileTypes = /jpeg|jpg|png|gif|webp/;
     const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = fileTypes.test(file.mimetype);
 
@@ -50,6 +50,10 @@ router.get('/verify', passport.authenticate('jwt', { session: false }), async fu
   res.json(req.user);
 });
 
+
+router.get('/verifyAdmin', passport.authenticate('jwt', { session: false }), allowRoles("Admin") , async function (req: Request, res: Response, next) {
+  res.json(req.user);
+});
 /* GET users listing. */
 router.get('/',async function (req: Request, res: Response, next) {
   try {
