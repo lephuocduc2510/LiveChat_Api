@@ -6,6 +6,7 @@ import { User } from '../entities/user.entity';
 import { RoomUser } from '../entities/roomUser.entity';
 import passport from 'passport';
 import { passportVerifyToken } from '../middlewares/passportJwt';
+import Message, { IMessage } from '../entities/message.model';
 
 passport.use('jwt', passportVerifyToken)
 
@@ -87,15 +88,30 @@ router.get('/user/:id', passport.authenticate('jwt', { session: false }),  async
         });
 
         if (rooms && rooms.length > 0) {
-            // Xử lý dữ liệu để trả về đúng format
-            const result = rooms.map(room => ({
-                id: room.id,
-                roomId: room.roomId,
-                userId: room.userId,
-                name: room.room.name,
-                groupLogo: room.room.groupLogo,
-                created_at: room.room.created_at,
-                updated_at: room.room.updated_at,
+            const result = await Promise.all(rooms.map(async room => {
+                const lastMessage = await Message.findOne({
+                    roomId: room.roomId
+                }).sort({ timestamp: -1 });
+                 // Nếu có tin nhắn cuối cùng, lấy thông tin người gửi từ bảng User
+                 let senderName = null;
+                 if (lastMessage && lastMessage.senderId) {
+                     const sender = await respositoryUser.findOne({ where: { id: lastMessage.senderId } });
+                     senderName = sender ? sender.fullname : null;
+                 }
+
+                return {
+                    id: room.id,
+                    roomId: room.roomId,
+                    userId: room.userId,
+                    name: room.room.name,
+                    groupLogo: room.room.groupLogo,
+                    created_at: room.room.created_at,
+                    updated_at: room.room.updated_at,
+                    lastMessage: lastMessage ? lastMessage.content : null,
+                    sendAt: lastMessage ? lastMessage.timestamp : null,
+                    senderId: lastMessage ? lastMessage.senderId : null,  // Thêm id người gửi
+                    senderName: lastMessage ? lastMessage.nameUser : null,
+                };
             }));
 
             res.json({

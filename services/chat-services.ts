@@ -38,25 +38,77 @@ export const setupChatService = (server: any): Server => {
           const roomId = data.roomId;  // Lấy roomId từ dữ liệu gửi tới
 
           // Gửi tin nhắn tới phòng cụ thể
-          io.to(roomId).emit('server-message', data);  // Chỉ gửi tới phòng với roomId tương ứng
+          // io.to(roomId).emit('server-message', data);  // Chỉ gửi tới phòng với roomId tương ứng
           // Lưu tin nhắn vào database
           const message = new Message({
             roomId: data.roomId,
             content: data.message,
             senderId: data.idUser,
+            senderName: data.nameUser,
             timestamp: data.timestamp,
             nameUser: data.nameUser,
             avatar: data.avatar,
+            
 
           });
 
+          // message.save()
+          //   .then(() => console.log('Message saved successfully'))
+          //   .catch((err: any) => console.error('Failed to save message:', err));
+          // console.log('Message:', message);
+
+          // Lưu tin nhắn vào database
           message.save()
-            .then(() => console.log('Message saved successfully'))
+            .then(savedMessage => {
+              console.log('Message saved successfully:', savedMessage);
+
+              // Thêm _id vào data và gửi lại cho client
+              const responseData = {
+                ...data,
+                _id: savedMessage._id, // Thêm _id vào data
+              };
+
+              // Emit lại dữ liệu cho client, bao gồm _id tự động của message
+              io.to(roomId).emit('server-message', responseData);
+            })
             .catch((err: any) => console.error('Failed to save message:', err));
+
           console.log('Message:', message);
           break;
 
-    
+        case 'update': // Cập nhật tin nhắn       
+          io.to(data.roomId).emit('server-message', data);
+          console.log('Message updated:', data._id, data.content, data.roomId);
+          // Cập nhật tin nhắn trong database
+          // Message.findByIdAndUpdate(data._id, { content: data.content }, { new: true })
+          //   .then(() => {
+          //     // Gửi lại ID và nội dung tin nhắn đã được cập nhật cho client trong phòng
+
+          //   })
+          //   .catch((err) => {
+          //     console.error('Error updating message:', err);
+          //   });
+          break;
+
+         
+        case 'delete': // Xóa tin nhắn
+        io.to(data.roomId).emit('server-message', data);
+        console.log('Message deleted:', data._id);  
+
+          // Xóa tin nhắn khỏi database
+          // Message.findByIdAndDelete(data._id)
+          //   .then(() => {
+          //     // Gửi lại ID của tin nhắn đã bị xóa cho client trong phòng
+          //     io.to(data.room).emit('server-message', {
+          //       type: 'delete',
+          //       _id: data._id,  // Chỉ trả về ID của tin nhắn đã xóa
+          //     });
+          //   })
+          //   .catch((err) => {
+          //     console.error('Error deleting message:', err);
+          //   });
+          break;
+
           // Xử lý các loại dữ liệu đặc biệt khác
           io.emit('server-message', data);
           break;

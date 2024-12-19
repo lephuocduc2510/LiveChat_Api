@@ -6,10 +6,12 @@ import moment from 'moment';
 interface IMessage extends Document {
   roomId: number;
   senderId: number;
+  senderName: string;
   content: string;
   nameUser: string;
   avatar: string;
   timestamp: string;
+  
   getFormattedTimestamp(): string;
 }
 // Định nghĩa schema cho Message
