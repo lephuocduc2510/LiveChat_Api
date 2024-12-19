@@ -50,7 +50,7 @@ router.get('/admin', passport.authenticate('login', { session: false }), allowRo
   res.json({ ok: true });
 });
 
-router.get('/roles', passport.authenticate('login', { session: false }),  allowRoles('Nomal User', 'Moderate User', "Admin"), function (req, res, next) {
+router.get('/roles', passport.authenticate('login', { session: false }),  allowRoles('User', 'Mod', "Admin"), function (req, res, next) {
   res.json({ ok: true }); 
 });
 

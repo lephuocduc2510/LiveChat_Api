@@ -3,6 +3,7 @@ import Message, { IMessage } from '../entities/message.model'; // Đảm bảo �
 import { AppDataSource } from '../data-source';
 import { User } from '../entities/user.entity';
 import { Room } from '../entities/room.entiy';
+import { allowRoles } from '../middlewares/checkRole';
 
 
 const Userrespository = AppDataSource.getRepository(User);
@@ -114,7 +115,7 @@ router.delete('/messages/:id', asyncHandler(async (req: Request, res: Response) 
 }));
 
 //Xoá tin nhắn theo phòng
-router.delete('/room/:roomId', asyncHandler(async (req: Request, res: Response) => {
+router.delete('/room/:roomId',allowRoles('Mod', "Admin") ,asyncHandler(async (req: Request, res: Response) => {
   const { roomId } = req.params;
   try {
     await Message
@@ -130,7 +131,7 @@ router.delete('/room/:roomId', asyncHandler(async (req: Request, res: Response) 
 
 // Xoá tất cả tin nhắn
 
-router.delete('/all-messages', asyncHandler(async (req: Request, res: Response) => {
+router.delete('/all-messages' ,allowRoles('Mod', "Admin"), asyncHandler(async (req: Request, res: Response) => {
   try {
     await Message.deleteMany({}); 
     res.json({ message: 'All messages deleted successfully' });

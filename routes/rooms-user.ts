@@ -6,6 +6,7 @@ import { User } from '../entities/user.entity';
 import { RoomUser } from '../entities/roomUser.entity';
 import passport from 'passport';
 import { passportVerifyToken } from '../middlewares/passportJwt';
+import { allowRoles } from '../middlewares/checkRole';
 import Message, { IMessage } from '../entities/message.model';
 
 passport.use('jwt', passportVerifyToken)
@@ -127,7 +128,7 @@ router.get('/user/:id', passport.authenticate('jwt', { session: false }),  async
 
 
 // Add user to room
-router.post('/', passport.authenticate('jwt', { session: false }) , async function (req: Request, res: Response, next) {
+router.post('/', passport.authenticate('jwt', { session: false }) ,allowRoles('Mod', "Admin"), async function (req: Request, res: Response, next) {
     try {
         const { idRoom, idUser } = req.body; // Lấy idRoom và idUser từ body của request
 
@@ -171,7 +172,7 @@ router.post('/', passport.authenticate('jwt', { session: false }) , async functi
 
 // Update role by Id
 
-router.patch('/:id',  passport.authenticate('jwt', { session: false }), async function (req: Request, res: Response, next) {
+router.patch('/:id',  passport.authenticate('jwt', { session: false }),allowRoles('Mod', "Admin"), async function (req: Request, res: Response, next) {
     try {
         const room = await respository.findOneBy({ id: parseInt(req.params.id) });
         if (room) {
@@ -189,7 +190,7 @@ router.patch('/:id',  passport.authenticate('jwt', { session: false }), async fu
 );
 
 //Delete user to room
-router.delete('/',  passport.authenticate('jwt', { session: false }), async function (req: Request, res: Response, next) {
+router.delete('/',  passport.authenticate('jwt', { session: false }),allowRoles('Mod', "Admin"), async function (req: Request, res: Response, next) {
     try {
         const idRoom = req.body.idRoom;
         const idUser = req.body.idUser;
